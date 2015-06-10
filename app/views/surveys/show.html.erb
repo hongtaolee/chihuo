@@ -1,0 +1,163 @@
+<% survey = @survey %>
+<div class="row" style="margin-bottom: 40px;">
+  <div class="col-md-2">
+    <div>
+      <h4 style="margin-top: 0;">
+        <% if survey.closed? %>
+            <span class="label label-default"><i class="glyphicon glyphicon-stop"></i> 已结束</span>
+        <% else %>
+            <span class="label label-success"><i class="glyphicon glyphicon-play"></i> 正在进行</span>
+        <% end %>
+      </h4>
+    </div>
+    <h3><%= relative_days(survey.published_at) %></h3>
+    <span class="text-muted"><%= survey.published_at.strftime('%R') %></span>
+    <% if !survey.closed? %>
+        <div class="m-t-20">
+          <span class="text-muted">剩余:</span>
+              <span class="text-primary" style="font-size: 1.2em; font-weight: bold;">
+                <span data-countdown data-mills="<%= survey.deadline.to_f * 1000 %>"><%= survey.deadline.strftime('%F %R') %></span>
+              </span>
+        </div>
+    <% end %>
+
+  </div>
+  <div class="col-md-10">
+    <div style="border-left: 1px solid #aaa; padding-left: 10px;">
+      <div>
+        <span class="text-muted">截止时间:</span>
+        <%= survey.deadline.strftime('%F %R') %>
+
+        <span class="text-muted m-l-10">发布时间:</span>
+        <%= timeago_tag survey.published_at, nojs: true, limit: 3.days.ago, lang: 'zh-CN' %>
+
+        <span class="text-muted m-l-10">发布人:</span>
+        <%= survey.user.name %>
+      </div>
+
+      <div class="row">
+        <% survey.dishes.group_by(&:restaurant).each do |restaurant, dishes| %>
+            <div class="col-md-3">
+              <div class="thumbnail" style="border: none;">
+                <h4><%= restaurant.name %></h4>
+                <ul>
+                  <% dishes.each do |dish| %>
+                      <li>
+                        <%= dish.name %> x <%= @dish_counts[dish.id] || 0 %>
+                      </li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2 text-muted">
+    已有<%= @survey.answers.size %>人点菜
+  </div>
+</div>
+
+<% @survey.answers.each do |answer| %>
+    <div class="row list-styled">
+      <div class="col-md-2">
+        <div class="pull-right m-l-10">
+          <%= answer.user.name %>
+          <br>
+            <span class="text-muted" style="font-size: 0.8em;">
+            <%= timeago_tag answer.updated_at, nojs: true, date_only: false, format: '%F %R', limit: 8.hours.ago, lang: 'zh-CN' %>
+            </span>
+        </div>
+
+        <div class="pull-right">
+          <%= gravatar_image_tag(answer.user.email, gravatar: {size: 40, default: :wavatar}) %>
+        </div>
+
+      </div>
+      <div class="col-md-10">
+        <% answer.dishes.each do |dish| %>
+            <%= dish.name %> <span class="text-muted" style="font-size: 0.8em;">(<%= dish.restaurant.name %>)</span>,
+        <% end %>
+        <% if @survey.open? && answer.user.id == current_user.id %>
+            <div>
+              <%= link_to "我不吃了", [@group, answer], method: :delete, data: {confirm: "确定不吃了？"} %>
+            </div>
+        <% end %>
+      </div>
+    </div>
+<% end %>
+
+<hr/>
+
+<div class="row">
+  <div class="col-md-offset-2 col-md-5">
+    <% if user_signed_in? %>
+        <% if @survey.closed? %>
+            已结束，不能点菜了
+        <% else %>
+            <div class="panel panel-primary">
+              <div class="panel-body">
+                <h4>我要吃：</h4>
+                <%= bootstrap_form_for [@group, @answer], disabled: true do |f| %>
+                    <%= f.hidden_field :survey_id %>
+                    <%= f.hidden_field :user_id %>
+
+                    <%= f.form_group do %>
+                        <%= f.collection_check_boxes :dish_ids, survey.dishes.sort_by(&:restaurant_id), :id, :full_name %>
+                    <% end %>
+                    <div>加班虽好，可不要贪吃奥</div>
+                    <%= f.submit "保存", class: "btn btn-primary" %>
+
+                    <% if !@answer.new_record? %>
+                        <%= link_to "我不吃了", [@group, @answer], method: :delete, data: {confirm: "确定不吃了？"} %>
+                    <% end %>
+                <% end %>
+              </div>
+            </div>
+        <% end %>
+    <% else %>
+        <%= link_to "请先登录", new_user_session_path %>, 然后再点菜
+    <% end %>
+  </div>
+</div>
+
+<%= content_for :javascript do %>
+    <script type="text/javascript">
+        function timeNumber(number) {
+            if (number < 10) {
+                return '0' + number;
+            } else {
+                return number;
+            }
+        }
+
+
+        $(function () {
+            $('span[data-countdown]').each(function () {
+                var $this = $(this);
+                var date = new Date(parseInt($this.data('mills')));
+
+                var timerId = countdown(date, function (ts) {
+                    var str = '';
+                    if (ts.hours !== 0) {
+                        str = ts.hours + '小时' + ts.minutes + '分' + ts.seconds + '秒';
+                    } else {
+                        str = timeNumber(ts.minutes) + '分' + timeNumber(ts.seconds) + '秒';
+                    }
+
+                    $this.text(str);
+
+                    // 时间超过截止时间后，变成已结束
+                    if (date.getTime() < new Date().getTime()) {
+                        $this.parent().text('已结束(' + $this.data('date') + ')')
+                        clearInterval(timerId);
+                    }
+                }, countdown.HOURS | countdown.MINUTES | countdown.SECONDS);
+            });
+        });
+    </script>
+<% end %>

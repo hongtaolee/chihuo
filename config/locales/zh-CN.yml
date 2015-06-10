@@ -1,0 +1,44 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+zh-CN:
+  app_name: 加班点餐
+  activerecord:
+    models:
+      user: 用户
+      group: 组
+      restaurant: 餐馆
+      dish: 菜
+      survey: 统计
+      answer: 我吃
+      alternative_dish: 备选菜单
+    attributes:
+      restaurant:
+        name: 名称
+      dish:
+        name: 名称
+      survey:
+        deadline: 截止时间
+        alternative_dishes: 菜单
+      answer:
+        dish: 菜
+        dish_id: 菜
+        dish_ids: 菜

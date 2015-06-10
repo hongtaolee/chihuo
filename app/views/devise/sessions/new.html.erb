@@ -1,0 +1,29 @@
+<% content_for :title, '登录' %>
+
+<div class="col-md-offset-3 col-md-5">
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><%= t('.sign_in', :default => "Sign in") %></h3>
+  </div>
+  <div class="panel-body">
+    <%= bootstrap_form_for(resource, :as => resource_name, :url => session_path(resource_name), layout: :form) do |f| %>
+
+        <%= f.email_field :email %>
+        <%= f.password_field :password %>
+        <%= f.form_group do %>
+            <%= f.check_box :remember_me %>
+        <% end %>
+
+        <%= f.form_group do %>
+            <%= f.submit t('.sign_in', :default => "Sign in") %>
+        <% end %>
+
+    <% end %>
+  </div>
+</div>
+
+
+<%= render "devise/shared/links" %>
+
+</div>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    <%= yield(:title) + ' - ' if content_for? :title %><%= t 'app_name' %>
+  </title>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <%= render 'shared/nav' %>
+
+  <%= render 'shared/notice' %>
+
+  <div class="container">
+
+    <%= content_for?(:content) ? yield(:content) : yield %>
+
+    <%= render "shared/footer" %>
+  </div>
+
+
+  <%= javascript_include_tag 'application' %>
+<!--[if lt IE 9]>
+<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="http://cdn.bootcss.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+<%= yield(:javascript) if content_for?(:javascript) %>
+
+</body>
+</html>

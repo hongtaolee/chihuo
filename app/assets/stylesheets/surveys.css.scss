@@ -1,0 +1,33 @@
+.surveys {
+
+  border-top: 1px solid #eee;
+
+  .survey {
+    border-bottom: 1px solid #eee;
+
+    padding: 15px;
+    &:hover {
+      background-color: #eee;
+
+    }
+
+    .thumbnail {
+      background-color: inherit;
+    }
+  }
+
+}
+
+ul.list-styled {
+
+  border-top: 1px solid #eee;
+
+  .li {
+    border-bottom: 1px solid #eee;
+  }
+}
+
+div.list-styled {
+  border-top: 1px solid #eee;
+  padding: 10px;
+}

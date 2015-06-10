@@ -1,0 +1,50 @@
+<h3>添加点餐统计</h3>
+
+<%= bootstrap_form_for([@group, @survey]) do |f| %>
+<%= f.hidden_field :group_id %>
+<%= f.hidden_field :user_id %>
+<%= f.text_field :deadline, readonly: true, required: true %>
+
+<div class="form-group">
+	<lable class="control-label">菜单</lable>
+	<% dishes_options = option_groups_from_collection_for_select(@group.restaurants, :dishes, :name, :id, :name) %>
+	<%= select_tag 'dishes[]', dishes_options, multiple: true %>
+</div>
+
+<%= f.form_group do %>
+<%= f.submit "保存", class: "btn btn-primary" %>
+<% end %>
+<% end %>
+
+<style>
+  .multi-select{
+      width: 500px;
+  }
+
+  .multi-select .ms-list{
+      height: 300px;
+  }
+
+  .multi-select .ms-optgroup-label{
+      color: #428bca;
+  }
+</style>
+<%= content_for :javascript do %>
+<script type="text/javascript">
+	$(function(){
+		$('input[name="survey[deadline]"]').datetimepicker({
+			language: 'zh-CN',
+			format: "yyyy-mm-dd hh:ii",
+			weekStart: 1,
+			autoclose: true,
+			startDate: new Date,
+			todayBtn: true,
+			todayHighlight: true
+		});
+
+		$('select').multiSelect({cssClass: 'multi-select', selectableHeader: '备选', selectionHeader: '已选'});
+
+        $('#new_survey').validate();
+	});
+</script>
+<% end %>

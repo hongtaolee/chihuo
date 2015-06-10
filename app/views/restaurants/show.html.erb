@@ -1,0 +1,28 @@
+
+<%= link_to '编辑', edit_group_restaurant_path(@group, @restaurant) %>
+<%= link_to '删除', group_restaurant_path(@group, @restaurant), method: :delete, data: { confirm: '确定删除？'} %>
+
+<h4>菜单</h4>
+<%= bootstrap_form_for Dish.new(restaurant_id: @restaurant.id), url: group_restaurant_dishes_path(@group, @restaurant), layout: :inline do |f| %>
+  <%= f.text_field :name %>
+  <%= f.hidden_field :restaurant_id %>
+  <%= f.submit "添加菜", class: "btn btn-primary" %>
+<% end %>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>名称</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<% @dishes.each do |dish| %>
+		<tr>
+			<td><%= dish.name %></td>
+			<td>编辑 |  <%= link_to '删除', group_restaurant_dish_path(@group, @restaurant, dish), method: :delete, data: { confirm: "确定删除？" } %></td>
+		</tr>
+		<% end %>
+	</tbody>
+</table>

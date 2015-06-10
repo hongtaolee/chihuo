@@ -1,0 +1,8 @@
+<%= bootstrap_form_for([@group, @restaurant]) do |f| %>
+  <%= f.text_field :name %>
+  <%= f.hidden_field :group_id %>
+
+  <%= f.form_group do %>
+    <%= f.submit %>
+  <% end %>
+<% end %>
